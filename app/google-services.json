@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "636131744128",
+    "project_id": "android-store-fbd5d",
+    "storage_bucket": "android-store-fbd5d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:636131744128:android:ed24fc4ddacf2e8b408965",
+        "android_client_info": {
+          "package_name": "com.example.andstore"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDN4Jxopj3Dt_MCXSrOCskXOtHciD9RTVc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
