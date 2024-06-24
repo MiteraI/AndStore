@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">AndStore</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_account">Profile</string>
+    <string name="nav_cart">Cart</string>
+    <string name="nav_category">Categories</string>
 </resources>
