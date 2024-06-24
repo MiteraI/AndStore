@@ -22,12 +22,13 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="180dp"
+                android:layout_height="165dp"
+                android:orientation="vertical"
                 android:background="@drawable/top_background">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="24dp">
@@ -55,8 +56,8 @@
                         android:id="@+id/imageView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginTop="13dp"
+                        android:layout_marginEnd="10dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         android:src="@drawable/bell"
@@ -66,13 +67,42 @@
                         android:id="@+id/imageView2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="13dp"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="10dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:srcCompat="@drawable/red_circle_notification" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <EditText
+                    android:id="@+id/search_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="25dp"
+                    android:layout_marginEnd="25dp"
+                    android:textColor="@color/black"
+                    android:ems="10"
+                    android:inputType="text"
+                    android:paddingHorizontal="15dp"
+                    android:drawableStart="@drawable/search_glass"
+                    android:drawablePadding="10dp"
+                    android:hint="Search..."
+                    android:background="@drawable/searchbar_background"/>
+
             </LinearLayout>
+
+            <com.denzcoskun.imageslider.ImageSlider
+                android:id="@+id/banner_slider"
+                android:layout_width="wrap_content"
+                android:layout_height="180dp"
+                android:layout_marginVertical="20dp"
+                android:layout_marginHorizontal="20dp"
+                app:iss_corner_radius="30"
+                app:iss_auto_cycle="true"
+                app:iss_period="3000"
+                app:iss_delay="3000"
+                app:iss_text_align="CENTER"/>
 
         </LinearLayout>
 
