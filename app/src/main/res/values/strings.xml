@@ -4,4 +4,9 @@
     <string name="nav_account">Profile</string>
     <string name="nav_cart">Cart</string>
     <string name="nav_category">Categories</string>
+    <string name="login">Login</string>
+    <string name="email_form">Email</string>
+    <string name="password_form">Password</string>
+    <string name="email_hint">example@gmail.com</string>
+    <string name="password_hint">Enter your password</string>
 </resources>

@@ -2,8 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:background="@color/black">
+    android:background="@color/black"
+    android:orientation="horizontal">
 
     <!-- Home Item -->
     <LinearLayout
@@ -39,18 +39,18 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="8dp"
         android:clickable="true"
-        android:focusable="true">
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="8dp">
 
         <ImageView
             android:id="@+id/icon_cart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/shopping_bag"
-            android:contentDescription="@string/nav_cart" />
+            android:contentDescription="@string/nav_cart"
+            android:src="@drawable/shopping_bag" />
 
         <TextView
             android:id="@+id/text_cart"
@@ -67,18 +67,18 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="8dp"
         android:clickable="true"
-        android:focusable="true">
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="8dp">
 
         <ImageView
             android:id="@+id/icon_account"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/account_circle"
-            android:contentDescription="@string/nav_home" />
+            android:contentDescription="@string/nav_home"
+            android:src="@drawable/account_circle" />
 
         <TextView
             android:id="@+id/text_account"

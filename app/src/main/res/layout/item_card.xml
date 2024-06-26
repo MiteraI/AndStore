@@ -1,108 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="160dp"
     android:layout_height="wrap_content"
+    android:layout_columnWeight="1"
     android:layout_margin="8dp"
     app:cardCornerRadius="8dp"
-    android:layout_columnWeight="1"
-    app:cardElevation="2dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    app:cardElevation="2dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white">
+
+        <ImageView
+            android:id="@+id/itemImage"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="16dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/itemTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="16dp"
+            android:text="Item"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/itemImage" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/quantityChanger"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
-            >
+            android:layout_marginTop="8dp"
+            android:padding="8dp"
+            app:layout_constraintBottom_toTopOf="@id/buyButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/itemTitle">
 
-            <ImageView
-                android:id="@+id/itemImage"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_margin="16dp"
-                app:layout_constraintDimensionRatio="1:1"
-                app:layout_constraintTop_toTopOf="parent"
+            <ImageButton
+                android:id="@+id/buttonMinus"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/circle_background"
+                android:contentDescription="Decrease"
+                android:src="@drawable/minus"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/textViewNumber"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/itemTitle"
-                android:textColor="@color/black"
-                android:layout_width="0dp"
+                android:id="@+id/textViewNumber"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:layout_marginVertical="16dp"
-                android:textAlignment="center"
-                android:textSize="16sp"
-                app:layout_constraintTop_toBottomOf="@id/itemImage"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:text="Item"/>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/quantityChanger"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:padding="8dp"
-                app:layout_constraintBottom_toTopOf="@id/buyButton"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/itemTitle">
-
-                <ImageButton
-                    android:id="@+id/buttonMinus"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/minus"
-                    android:background="@drawable/circle_background"
-                    android:contentDescription="Decrease"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/textViewNumber"/>
-
-                <TextView
-                    android:id="@+id/textViewNumber"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="1"
-                    android:textSize="18sp"
-                    android:textColor="@color/black"
-                    android:layout_marginHorizontal="16dp"
-                    app:layout_constraintStart_toEndOf="@id/buttonMinus"
-                    app:layout_constraintEnd_toStartOf="@id/buttonPlus"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
-
-                <ImageButton
-                    android:id="@+id/buttonPlus"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/plus"
-                    android:background="@drawable/circle_background"
-                    android:contentDescription="Increase"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/textViewNumber"/>
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/buyButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="Buy"
-                android:layout_marginTop="8dp"
-                android:textColor="@color/white"
-                android:background="@color/black"
+                android:text="1"
+                android:textColor="@color/black"
+                android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/buttonPlus"
+                app:layout_constraintStart_toEndOf="@id/buttonMinus"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/buttonPlus"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/circle_background"
+                android:contentDescription="Increase"
+                android:src="@drawable/plus"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/quantityChanger"
-                />
+                app:layout_constraintStart_toEndOf="@id/textViewNumber"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/buyButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@color/black"
+            android:text="Buy"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/quantityChanger" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

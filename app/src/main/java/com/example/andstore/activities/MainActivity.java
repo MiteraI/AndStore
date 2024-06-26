@@ -1,8 +1,10 @@
-package com.example.andstore;
+package com.example.andstore.activities;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.denzcoskun.imageslider.ImageSlider;
 import com.denzcoskun.imageslider.constants.ScaleTypes;
 import com.denzcoskun.imageslider.models.SlideModel;
+import com.example.andstore.R;
 import com.example.andstore.adapters.ShopItemAdapter;
 import com.example.andstore.models.ShopItem;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -51,11 +54,6 @@ public class MainActivity extends AppCompatActivity {
         shopItemList.add(new ShopItem("3", "Pants", "", "Hi", "1"));
         shopItemList.add(new ShopItem("4", "Shirts", "", "Hi", "1"));
         shopItemList.add(new ShopItem("5", "Pens", "", "Hi", "1"));
-        shopItemList.add(new ShopItem("1", "Shoes", "", "Hi", "1"));
-        shopItemList.add(new ShopItem("2", "Bags", "", "Hi", "1"));
-        shopItemList.add(new ShopItem("3", "Pants", "", "Hi", "1"));
-        shopItemList.add(new ShopItem("4", "Shirts", "", "Hi", "1"));
-        shopItemList.add(new ShopItem("5", "Pens", "", "Hi", "1"));
 
         recyclerView = (RecyclerView) findViewById(R.id.shop_item_recycler_view);
         layoutManager = new GridLayoutManager(this, 2) {
@@ -69,6 +67,16 @@ public class MainActivity extends AppCompatActivity {
         //Init adapter for recycler view
         adapter = new ShopItemAdapter(shopItemList);
         recyclerView.setAdapter(adapter);
+
+        //Intent to login
+        LinearLayout accountNavigation = (LinearLayout) findViewById(R.id.nav_account);
+        accountNavigation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(loginIntent);
+            }
+        });
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         EdgeToEdge.enable(this);
