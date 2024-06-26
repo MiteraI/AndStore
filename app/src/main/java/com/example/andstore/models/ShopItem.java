@@ -6,6 +6,7 @@ public class ShopItem {
     private String productImageUrl;
     private String productDesc;
     private String productQuantity;
+    private String productPrice;
     public ShopItem(String id,
                     String productName,
                     String productImageUrl,
@@ -16,6 +17,20 @@ public class ShopItem {
         this.productImageUrl = productImageUrl;
         this.productDesc = productDesc;
         this.productQuantity = productQuantity;
+    }
+
+    public ShopItem(String id,
+                    String productName,
+                    String productImageUrl,
+                    String productDesc,
+                    String productQuantity,
+                    String productPrice) {
+        this.id = id;
+        this.productName = productName;
+        this.productImageUrl = productImageUrl;
+        this.productDesc = productDesc;
+        this.productQuantity = productQuantity;
+        this.productPrice = productPrice;
     }
 
     public String getId() {

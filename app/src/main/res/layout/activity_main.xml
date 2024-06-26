@@ -88,7 +88,8 @@
                     android:hint="Search..."
                     android:inputType="text"
                     android:paddingHorizontal="15dp"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/grey" />
 
             </LinearLayout>
 
