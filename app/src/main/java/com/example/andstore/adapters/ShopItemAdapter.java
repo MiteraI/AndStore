@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.andstore.R;
 import com.example.andstore.models.ShopItem;
 
@@ -51,10 +52,8 @@ public class ShopItemAdapter extends RecyclerView.Adapter<ShopItemAdapter.ItemVi
         ShopItem currentItem = itemList.get(position);
         holder.itemTitle.setText(currentItem.getProductName());
 
-        // Assuming you have an image URL or resource ID to set the image
-        // holder.itemImage.setImageResource(currentItem.getImageResourceId()); // if you have a drawable resource ID
         // or use a library like Glide or Picasso if you have an image URL
-        // Glide.with(holder.itemView.getContext()).load(currentItem.getImageUrl()).into(holder.itemImage);
+        Glide.with(holder.itemView.getContext()).load(currentItem.getProductImageUrl()).into(holder.itemImage);
 
         holder.textViewNumber.setText(currentItem.getProductQuantity());
 

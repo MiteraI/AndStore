@@ -49,11 +49,11 @@ public class MainActivity extends AppCompatActivity {
 
         //Set item recycler view
         shopItemList = new ArrayList<ShopItem>();
-        shopItemList.add(new ShopItem("1", "Shoes", "", "Hi", "1"));
-        shopItemList.add(new ShopItem("2", "Bags", "", "Hi", "1"));
-        shopItemList.add(new ShopItem("3", "Pants", "", "Hi", "1"));
-        shopItemList.add(new ShopItem("4", "Shirts", "", "Hi", "1"));
-        shopItemList.add(new ShopItem("5", "Pens", "", "Hi", "1"));
+        shopItemList.add(new ShopItem("1", "Shoes", "https://image.uniqlo.com/UQ/ST3/vn/imagesgoods/424873/item/vngoods_31_424873.jpg?width=320", "Hi", "1"));
+        shopItemList.add(new ShopItem("2", "Bags", "https://image.uniqlo.com/UQ/ST3/vn/imagesgoods/424873/item/vngoods_31_424873.jpg?width=320", "Hi", "1"));
+        shopItemList.add(new ShopItem("3", "Pants", "https://image.uniqlo.com/UQ/ST3/vn/imagesgoods/424873/item/vngoods_31_424873.jpg?width=320", "Hi", "1"));
+        shopItemList.add(new ShopItem("4", "Shirts", "https://image.uniqlo.com/UQ/ST3/vn/imagesgoods/424873/item/vngoods_31_424873.jpg?width=320", "Hi", "1"));
+        shopItemList.add(new ShopItem("5", "Pens", "https://image.uniqlo.com/UQ/ST3/vn/imagesgoods/424873/item/vngoods_31_424873.jpg?width=320", "Hi", "1"));
 
         recyclerView = (RecyclerView) findViewById(R.id.shop_item_recycler_view);
         layoutManager = new GridLayoutManager(this, 2) {
