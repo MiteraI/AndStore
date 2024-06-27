@@ -21,8 +21,8 @@ public class ShopItemAdapter extends RecyclerView.Adapter<ShopItemAdapter.ItemVi
     public static class ItemViewHolder extends RecyclerView.ViewHolder {
         public ImageView itemImage;
         public TextView itemTitle;
+        public TextView itemPrice;
         public TextView textViewNumber;
-
         public ImageButton buttonMinus;
         public ImageButton buttonPlus;
         public AppCompatButton buyButton;
@@ -30,6 +30,7 @@ public class ShopItemAdapter extends RecyclerView.Adapter<ShopItemAdapter.ItemVi
             super(itemView);
             itemImage = itemView.findViewById(R.id.itemImage);
             itemTitle = itemView.findViewById(R.id.itemTitle);
+            itemPrice = itemView.findViewById(R.id.itemPrice);
             buttonMinus = itemView.findViewById(R.id.buttonMinus);
             textViewNumber = itemView.findViewById(R.id.textViewNumber);
             buttonPlus = itemView.findViewById(R.id.buttonPlus);
@@ -51,6 +52,7 @@ public class ShopItemAdapter extends RecyclerView.Adapter<ShopItemAdapter.ItemVi
     public void onBindViewHolder(ItemViewHolder holder, int position) {
         ShopItem currentItem = itemList.get(position);
         holder.itemTitle.setText(currentItem.getProductName());
+        holder.itemPrice.setText("$ " + currentItem.getProductPrice());
 
         // or use a library like Glide or Picasso if you have an image URL
         Glide.with(holder.itemView.getContext()).load(currentItem.getProductImageUrl()).into(holder.itemImage);

@@ -46,6 +46,9 @@ public class ShopItem {
     public String getProductDesc() {
         return productDesc;
     }
+    public double getProductPrice() {
+        return productPrice;
+    }
     public String getProductImageUrl() {
         return productImageUrl;
     }

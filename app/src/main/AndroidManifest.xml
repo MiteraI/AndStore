@@ -14,9 +14,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AndStore"
-        tools:targetApi="31">
+        tools:targetApi="33"
+        android:enableOnBackInvokedCallback="true">
         <activity
-            android:name=".activities.UserProfileActivity"
+            android:name=".activities.OrderActivity"
             android:exported="false" />
         <activity
             android:name=".activities.RegisterActivity"
@@ -32,8 +33,7 @@
         </activity>
         <activity
             android:name=".activities.LoginActivity"
-            android:exported="false">
-        </activity>
+            android:exported="false"></activity>
     </application>
 
 </manifest>
