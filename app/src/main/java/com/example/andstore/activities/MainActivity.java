@@ -2,6 +2,7 @@ package com.example.andstore.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -22,12 +23,15 @@ import com.example.andstore.R;
 import com.example.andstore.adapters.ShopItemAdapter;
 import com.example.andstore.models.ShopItem;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseFirestore fStore = FirebaseFirestore.getInstance();
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -66,14 +70,9 @@ public class MainActivity extends AppCompatActivity {
         ImageSlider imageSlider = (ImageSlider) findViewById(R.id.banner_slider);
         imageSlider.setImageList(imageList);
 
+
         //Set item recycler view
         shopItemList = new ArrayList<ShopItem>();
-        shopItemList.add(new ShopItem("1", "Shoes", "https://image.uniqlo.com/UQ/ST3/vn/imagesgoods/424873/item/vngoods_31_424873.jpg?width=320", "Hi", "1"));
-        shopItemList.add(new ShopItem("2", "Bags", "https://image.uniqlo.com/UQ/ST3/vn/imagesgoods/424873/item/vngoods_31_424873.jpg?width=320", "Hi", "1"));
-        shopItemList.add(new ShopItem("3", "Pants", "https://image.uniqlo.com/UQ/ST3/vn/imagesgoods/424873/item/vngoods_31_424873.jpg?width=320", "Hi", "1"));
-        shopItemList.add(new ShopItem("4", "Shirts", "https://image.uniqlo.com/UQ/ST3/vn/imagesgoods/424873/item/vngoods_31_424873.jpg?width=320", "Hi", "1"));
-        shopItemList.add(new ShopItem("5", "Pens", "https://image.uniqlo.com/UQ/ST3/vn/imagesgoods/424873/item/vngoods_31_424873.jpg?width=320", "Hi", "1"));
-
         recyclerView = (RecyclerView) findViewById(R.id.shop_item_recycler_view);
         layoutManager = new GridLayoutManager(this, 2) {
             @Override
@@ -85,6 +84,27 @@ public class MainActivity extends AppCompatActivity {
 
         //Init adapter for recycler view
         adapter = new ShopItemAdapter(shopItemList);
+
+        //Get items from firestore
+        fStore.collection("shop-products").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    shopItemList.add(new ShopItem(
+                            document.getId(),
+                            document.getString("productName"),
+                            document.getString("productImageUrl"),
+                            document.getString("productDesc"),
+                            "1",
+                            document.getDouble("productPrice"),
+                            document.getLong("productStockQuantity").intValue()
+                    ));
+                }
+                adapter.notifyDataSetChanged();
+            } else {
+                Toast.makeText(MainActivity.this, "Error getting documents", Toast.LENGTH_SHORT).show();
+                Log.d("Error", "Error getting documents: ", task.getException());
+            }
+        });
         recyclerView.setAdapter(adapter);
 
         //Intent to login
