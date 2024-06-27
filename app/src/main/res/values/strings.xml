@@ -1,4 +1,5 @@
 <resources>
+    <string name="default_request_id">636131744128-cfejjhgiprp0rrdl9t8dqg815rqipd8i.apps.googleusercontent.com</string>
     <string name="app_name">AndStore</string>
     <string name="nav_home">Home</string>
     <string name="nav_account">Profile</string>
