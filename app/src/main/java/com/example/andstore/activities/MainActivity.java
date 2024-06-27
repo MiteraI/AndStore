@@ -1,14 +1,14 @@
 package com.example.andstore.activities;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -21,21 +21,40 @@ import com.denzcoskun.imageslider.models.SlideModel;
 import com.example.andstore.R;
 import com.example.andstore.adapters.ShopItemAdapter;
 import com.example.andstore.models.ShopItem;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private List<ShopItem> shopItemList;
+    TextView welcomeText;
+    TextView usernameText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        EdgeToEdge.enable(this);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+
+        //Init views
+        welcomeText = (TextView) findViewById(R.id.welcome_text);
+        usernameText = (TextView) findViewById(R.id.username_text);
+
+        //Check if user has logged in, if not show default text
+        if (mAuth.getCurrentUser() != null) {
+            welcomeText.setText("Welcome");
+            usernameText.setText(mAuth.getCurrentUser().getEmail());
+        }
 
         //Banner slider settings
         ArrayList<SlideModel> imageList = new ArrayList<SlideModel>();
@@ -73,17 +92,13 @@ public class MainActivity extends AppCompatActivity {
         accountNavigation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(loginIntent);
+                if (mAuth.getCurrentUser() == null) {
+                    Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
+                    startActivity(loginIntent);
+                } else {
+                    Toast.makeText(MainActivity.this, "You are already logged in, waiting to implement Profile page", Toast.LENGTH_SHORT).show();
+                }
             }
-        });
-
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        EdgeToEdge.enable(this);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
         });
     }
 }

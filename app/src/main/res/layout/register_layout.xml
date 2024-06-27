@@ -48,12 +48,13 @@
                 android:textColor="@color/black" />
 
             <EditText
+                android:id="@+id/email_form"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/form_border"
                 android:hint="@string/email_hint"
-                android:inputType="text"
+                android:inputType="textEmailAddress"
                 android:paddingHorizontal="24dp"
                 android:paddingVertical="8dp"
                 android:textColor="@color/black"
@@ -67,6 +68,7 @@
                 android:textColor="@color/black" />
 
             <EditText
+                android:id="@+id/password_form"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -82,10 +84,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="@string/password_form"
+                android:text="Confirm password"
                 android:textColor="@color/black" />
 
             <EditText
+                android:id="@+id/password_confirm_form"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -98,6 +101,7 @@
                 android:textColorHint="@color/grey" />
 
             <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/register_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="48dp"
