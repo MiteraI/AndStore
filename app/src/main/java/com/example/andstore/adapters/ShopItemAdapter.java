@@ -1,5 +1,6 @@
 package com.example.andstore.adapters;
 
+import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,12 +16,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.andstore.R;
 import com.example.andstore.activities.ProductDetailsActivity;
+import com.example.andstore.models.CartItem;
 import com.example.andstore.models.ShopItem;
+import com.example.andstore.preferences.CartPreferences;
 
 import java.util.List;
 
 public class ShopItemAdapter extends RecyclerView.Adapter<ShopItemAdapter.ItemViewHolder> {
     List<ShopItem> itemList;
+    CartPreferences cartPreferences;
 
     public static class ItemViewHolder extends RecyclerView.ViewHolder {
         public ImageView itemImage;
@@ -42,8 +47,9 @@ public class ShopItemAdapter extends RecyclerView.Adapter<ShopItemAdapter.ItemVi
         }
     }
 
-    public ShopItemAdapter(List<ShopItem> itemList) {
+    public ShopItemAdapter(Context context, List<ShopItem> itemList) {
         this.itemList = itemList;
+        this.cartPreferences = new CartPreferences(context);
     }
 
     @Override
@@ -99,9 +105,20 @@ public class ShopItemAdapter extends RecyclerView.Adapter<ShopItemAdapter.ItemVi
         });
 
         holder.buyButton.setOnClickListener(v -> {
-            // Handle the buy button click
-            // You might want to add some logic here, for example:
-            // open a new activity, show a dialog, etc.
+            // Create a CartItem from the current ShopItem
+            CartItem cartItem = new CartItem(
+                    currentItem.getId(),
+                    currentItem.getProductName(),
+                    currentItem.getProductImageUrl(),
+                    Integer.parseInt(currentItem.getProductQuantity()),
+                    currentItem.getProductPrice()
+            );
+
+            // Add the CartItem to the cart using CartPreferences
+            cartPreferences.addCartItem(cartItem);
+
+            // Provide feedback to the user, e.g., show a Toast message
+            Toast.makeText(v.getContext(), currentItem.getProductName() + " added to cart", Toast.LENGTH_SHORT).show();
         });
     }
 

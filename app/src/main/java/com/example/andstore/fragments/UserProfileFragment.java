@@ -86,7 +86,7 @@ public class UserProfileFragment extends Fragment {
                     "phoneNumber", phoneForm.getText().toString(),
                     "address", addressForm.getText().toString()
             );
-            
+
             // Notify user with toast that update is successful
             Toast.makeText(getActivity(), "Profile updated", Toast.LENGTH_SHORT).show();
         });

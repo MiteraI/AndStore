@@ -83,7 +83,7 @@ public class HomeFragment extends Fragment {
         };
         recyclerView.setLayoutManager(layoutManager);
 
-        adapter = new ShopItemAdapter(shopItemList);
+        adapter = new ShopItemAdapter(view.getContext() ,shopItemList);
         recyclerView.setAdapter(adapter);
 
         // Get items from Firestore
