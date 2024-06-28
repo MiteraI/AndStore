@@ -50,13 +50,41 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/nav_cart"
-            android:src="@drawable/shopping_bag" />
+            android:src="@drawable/cart" />
 
         <TextView
             android:id="@+id/text_cart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/nav_cart"
+            android:textColor="@android:color/white"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <!-- Order Item -->
+    <LinearLayout
+        android:id="@+id/nav_order"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <ImageView
+            android:id="@+id/icon_order"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/nav_cart"
+            android:src="@drawable/shopping_bag" />
+
+        <TextView
+            android:id="@+id/text_order"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/nav_orders"
             android:textColor="@android:color/white"
             android:textSize="12sp" />
     </LinearLayout>

@@ -8,6 +8,8 @@ public class ShopItem {
     private String productQuantity;
     private int productStockQuantity;
     private double productPrice;
+
+    public ShopItem() { }
     public ShopItem(String id,
                     String productName,
                     String productImageUrl,
@@ -55,6 +57,11 @@ public class ShopItem {
     public String getProductQuantity() {
         return productQuantity;
     }
+
+    public int getProductStockQuantity() {
+        return productStockQuantity;
+    }
+
     public void setProductQuantity(String productQuantity) {
         this.productQuantity = productQuantity;
     }

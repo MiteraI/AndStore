@@ -1,5 +1,6 @@
 package com.example.andstore.adapters;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,12 +13,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.andstore.R;
+import com.example.andstore.activities.ProductDetailsActivity;
 import com.example.andstore.models.ShopItem;
 
 import java.util.List;
 
 public class ShopItemAdapter extends RecyclerView.Adapter<ShopItemAdapter.ItemViewHolder> {
     List<ShopItem> itemList;
+
     public static class ItemViewHolder extends RecyclerView.ViewHolder {
         public ImageView itemImage;
         public TextView itemTitle;
@@ -26,6 +29,7 @@ public class ShopItemAdapter extends RecyclerView.Adapter<ShopItemAdapter.ItemVi
         public ImageButton buttonMinus;
         public ImageButton buttonPlus;
         public AppCompatButton buyButton;
+
         public ItemViewHolder(View itemView) {
             super(itemView);
             itemImage = itemView.findViewById(R.id.itemImage);
@@ -41,6 +45,7 @@ public class ShopItemAdapter extends RecyclerView.Adapter<ShopItemAdapter.ItemVi
     public ShopItemAdapter(List<ShopItem> itemList) {
         this.itemList = itemList;
     }
+
     @Override
     public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
@@ -58,6 +63,24 @@ public class ShopItemAdapter extends RecyclerView.Adapter<ShopItemAdapter.ItemVi
         Glide.with(holder.itemView.getContext()).load(currentItem.getProductImageUrl()).into(holder.itemImage);
 
         holder.textViewNumber.setText(currentItem.getProductQuantity());
+
+        // Intent to product details from item image, item title, item price
+        holder.itemImage.setOnClickListener(v -> {
+            Intent intent = new Intent(v.getContext(), ProductDetailsActivity.class);
+            intent.putExtra(v.getContext().getString(R.string.id), currentItem.getId());
+            v.getContext().startActivity(intent);
+        });
+        holder.itemTitle.setOnClickListener(v -> {
+            Intent intent = new Intent(v.getContext(), ProductDetailsActivity.class);
+            intent.putExtra(v.getContext().getString(R.string.id), currentItem.getId());
+            v.getContext().startActivity(intent);
+        });
+        holder.itemPrice.setOnClickListener(v -> {
+            Intent intent = new Intent(v.getContext(), ProductDetailsActivity.class);
+            intent.putExtra(v.getContext().getString(R.string.id), currentItem.getId());
+            v.getContext().startActivity(intent);
+        });
+
 
         holder.buttonMinus.setOnClickListener(v -> {
             int quantity = Integer.parseInt(holder.textViewNumber.getText().toString());

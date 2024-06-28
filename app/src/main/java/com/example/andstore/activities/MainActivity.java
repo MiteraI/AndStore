@@ -16,16 +16,19 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.andstore.R;
+import com.example.andstore.fragments.CartFragment;
 import com.example.andstore.fragments.HomeFragment;
+import com.example.andstore.fragments.OrderFragment;
 import com.example.andstore.fragments.UserProfileFragment;
 import com.google.firebase.auth.FirebaseAuth;
 
 
-public class MainActivity extends AppCompatActivity implements UserProfileFragment.ProfileFragmentListener {
+public class MainActivity extends AppCompatActivity {
     private Fragment currentFragment;
     LinearLayout homeButton;
     LinearLayout profileButton;
     LinearLayout cartButton;
+    LinearLayout orderButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,10 +43,12 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
         homeButton = (LinearLayout) findViewById(R.id.nav_home);
         profileButton = (LinearLayout) findViewById(R.id.nav_account);
         cartButton = (LinearLayout) findViewById(R.id.nav_cart);
+        orderButton = (LinearLayout) findViewById(R.id.nav_order);
 
         homeButton.setOnClickListener(v -> loadFragment(new HomeFragment()));
         profileButton.setOnClickListener(v -> handleAccountNavigation());
-        //cartButton.setOnClickListener(v -> loadFragment(new CartFragment()));
+        cartButton.setOnClickListener(v -> loadFragment(new CartFragment()));
+        orderButton.setOnClickListener(v -> loadFragment(new OrderFragment()));
 
         if (savedInstanceState == null) {
             loadFragment(new HomeFragment());
@@ -71,10 +76,5 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
             // User is logged in, load ProfileFragment
             loadFragment(new UserProfileFragment());
         }
-    }
-
-    @Override
-    public void onSwitchToHomeTab() {
-        loadFragment(new HomeFragment());
     }
 }
