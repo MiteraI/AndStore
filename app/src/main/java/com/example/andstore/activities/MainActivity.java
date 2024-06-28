@@ -57,11 +57,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadFragment(Fragment fragment) {
         if (currentFragment != null && currentFragment.getClass() == fragment.getClass()) {
-            // If the requested fragment is already displayed, do nothing
             return;
         }
 
-        Log.d("MainActivity", "Loading fragment: " + fragment.getClass().getSimpleName());
         currentFragment = fragment;
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_place, fragment)
