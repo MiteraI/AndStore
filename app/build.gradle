@@ -15,11 +15,19 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+        buildConfigField "String", "PAYPAL_CLIENT_ID", properties.getProperty("PAYPAL.CLIENT_ID")
+        buildConfigField "String", "PAYPAL_SECRET", properties.getProperty("PAYPAL.SECRET_KEY")
+        buildConfigField "String", "PAYPAL_SANDBOX_EMAIL", properties.getProperty("PAYPAL.SANDBOX_EMAIL")
+        buildConfigField "String", "PAYPAL_SANDBOX_PWD", properties.getProperty("PAYPAL.SANDBOX_PWD")
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -41,6 +49,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.16.0'
     implementation 'com.google.android.gms:play-services-auth:20.5.0'
     implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'com.paypal.sdk:paypal-android-sdk:2.16.0'
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
