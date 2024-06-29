@@ -16,6 +16,9 @@ public class CartItem {
         this.price = price;
     }
 
+    public String getId() {
+        return id;
+    }
     public String getProductName() {
         return productName;
     }

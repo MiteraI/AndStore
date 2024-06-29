@@ -61,7 +61,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
                 productName.setText(currentItem.getProductName());
                 productPrice.setText("$ " + currentItem.getProductPrice());
                 productDescription.setText(currentItem.getProductDesc());
-                productStockQuantity.setText("In Stock: " + currentItem.getProductStockQuantity());
+                productStockQuantity.setText(String.valueOf(currentItem.getProductStockQuantity()));
                 productQuantity.setText("1");
                 Glide.with(this).load(currentItem.getProductImageUrl()).into(productImage);
             } else {

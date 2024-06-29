@@ -17,11 +17,17 @@ import com.example.andstore.models.CartItem;
 import com.example.andstore.models.ShopItem;
 import com.example.andstore.preferences.CartPreferences;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.CartItemViewHolder> {
     List<CartItem> cartItems;
     CartPreferences cartPreferences;
+    OnCartItemChangeListener onCartItemChangeListener;
+
+    public interface OnCartItemChangeListener {
+        void onCartItemChange();
+    }
 
     public static class CartItemViewHolder extends RecyclerView.ViewHolder {
         ImageView cartItemImage;
@@ -44,9 +50,10 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.CartIt
         }
     }
 
-    public CartItemAdapter(Context context, List<CartItem> cartItems) {
+    public CartItemAdapter(Context context, List<CartItem> cartItems, OnCartItemChangeListener listener) {
         this.cartItems = cartItems;
         this.cartPreferences = new CartPreferences(context);
+        this.onCartItemChangeListener = listener;
     }
 
     @NonNull
@@ -61,29 +68,33 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.CartIt
     public void onBindViewHolder(@NonNull CartItemViewHolder holder, int position) {
         CartItem currentItem = cartItems.get(position);
         holder.cartItemTitle.setText(currentItem.getProductName());
-        holder.cartItemPrice.setText("$ " + String.valueOf(currentItem.getPrice()));
+        holder.cartItemPrice.setText("$ " + String.format("%.2f", currentItem.getPrice()));
 
         Glide.with(holder.itemView.getContext()).load(currentItem.getProductImageUrl()).into(holder.cartItemImage);
 
         holder.cartQuantity.setText(String.valueOf(currentItem.getQuantity()));
-        holder.cartItemTotalPrice.setText("$ " + String.valueOf(currentItem.getPrice() * currentItem.getQuantity()));
+        holder.cartItemTotalPrice.setText("$ " + String.format("%.2f", currentItem.getPrice() * currentItem.getQuantity()));
 
         holder.buttonMinus.setOnClickListener(v -> {
             int quantity = Integer.parseInt(holder.cartQuantity.getText().toString());
             if (quantity > 1) {
                 quantity--;
+                cartPreferences.updateCartItemQuantityByProductId(currentItem.getId(), quantity);
                 holder.cartQuantity.setText(String.valueOf(quantity));
                 currentItem.setQuantity(quantity);
-                holder.cartItemTotalPrice.setText("$ " + String.valueOf(currentItem.getPrice() * quantity));
+                holder.cartItemTotalPrice.setText("$ " + String.format("%.2f", currentItem.getPrice() * quantity));
+                onCartItemChangeListener.onCartItemChange();
             }
         });
 
         holder.buttonPlus.setOnClickListener(v -> {
             int quantity = Integer.parseInt(holder.cartQuantity.getText().toString());
             quantity++;
+            cartPreferences.updateCartItemQuantityByProductId(currentItem.getId(), quantity);
             holder.cartQuantity.setText(String.valueOf(quantity));
             currentItem.setQuantity(quantity);
-            holder.cartItemTotalPrice.setText("$ " + String.valueOf(currentItem.getPrice() * quantity));
+            holder.cartItemTotalPrice.setText("$ " + String.format("%.2f", currentItem.getPrice() * quantity));
+            onCartItemChangeListener.onCartItemChange();
         });
 
     }

@@ -35,6 +35,15 @@ public class CartPreferences {
         if (cartItems == null) {
             cartItems = new ArrayList<>();
         }
+
+        // Check if the item is already in the cart
+        for (CartItem item : cartItems) {
+            if (item.getId().equals(newItem.getId())) {
+                item.setQuantity(item.getQuantity() + newItem.getQuantity());
+                saveCartItems(cartItems);
+                return;
+            }
+        }
         cartItems.add(newItem);
         saveCartItems(cartItems);
     }
@@ -45,9 +54,33 @@ public class CartPreferences {
         return gson.fromJson(json, type);
     }
 
+    public void updateCartItemQuantityByProductId(String productId, int quantity) {
+        cartItems = getCartItems();
+        if (cartItems != null) {
+            for (CartItem item : cartItems) {
+                if (item.getId().equals(productId)) {
+                    item.setQuantity(quantity);
+                    break;
+                }
+            }
+            saveCartItems(cartItems);
+        }
+    }
+
     public void clearCart() {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.remove(CART_ITEMS);
         editor.apply();
+    }
+
+    public double getTotalPrice() {
+        cartItems = getCartItems();
+        double totalPrice = 0;
+        if (cartItems != null) {
+            for (CartItem item : cartItems) {
+                totalPrice += item.getPrice() * item.getQuantity();
+            }
+        }
+        return totalPrice;
     }
 }
