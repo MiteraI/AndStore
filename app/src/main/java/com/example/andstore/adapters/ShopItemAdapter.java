@@ -49,7 +49,7 @@ public class ShopItemAdapter extends RecyclerView.Adapter<ShopItemAdapter.ItemVi
 
     public ShopItemAdapter(Context context, List<ShopItem> itemList) {
         this.itemList = itemList;
-        this.cartPreferences = new CartPreferences(context);
+        this.cartPreferences = CartPreferences.getInstance(context);
     }
 
     @Override

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -14,21 +15,25 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 
 import com.example.andstore.R;
 import com.example.andstore.fragments.CartFragment;
 import com.example.andstore.fragments.HomeFragment;
 import com.example.andstore.fragments.OrderFragment;
 import com.example.andstore.fragments.UserProfileFragment;
+import com.example.andstore.preferences.CartPreferences;
 import com.google.firebase.auth.FirebaseAuth;
 
 
 public class MainActivity extends AppCompatActivity {
+    private CartPreferences cartPreferences;
     private Fragment currentFragment;
     LinearLayout homeButton;
     LinearLayout profileButton;
     LinearLayout cartButton;
     LinearLayout orderButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +58,13 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             loadFragment(new HomeFragment());
         }
+
+        // Set up cart notification badge
+        cartPreferences = CartPreferences.getInstance(this);
+        cartPreferences.getCartItemCount().observe(this, itemCount -> {
+            Log.d("MainActivity", "Cart item count changed: " + itemCount);
+            updateCartIcon(itemCount);
+        });
     }
 
     private void loadFragment(Fragment fragment) {
@@ -68,11 +80,24 @@ public class MainActivity extends AppCompatActivity {
 
     private void handleAccountNavigation() {
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
-            // User is not logged in, start LoginActivity
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
         } else {
-            // User is logged in, load ProfileFragment
             loadFragment(new UserProfileFragment());
+        }
+    }
+
+    private void updateCartIcon(int itemCount) {
+        if (itemCount > 0) {
+            ImageView notificationCircle = findViewById(R.id.red_notification_circle);
+            TextView cartCount = findViewById(R.id.cart_notification_count);
+            cartCount.setVisibility(View.VISIBLE);
+            notificationCircle.setVisibility(View.VISIBLE);
+            cartCount.setText(String.valueOf(itemCount));
+        } else {
+            TextView cartCount = findViewById(R.id.cart_notification_count);
+            ImageView notificationCircle = findViewById(R.id.red_notification_circle);
+            notificationCircle.setVisibility(View.GONE);
+            cartCount.setVisibility(View.GONE);
         }
     }
 }

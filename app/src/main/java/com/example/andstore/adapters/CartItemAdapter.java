@@ -23,12 +23,6 @@ import java.util.List;
 public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.CartItemViewHolder> {
     List<CartItem> cartItems;
     CartPreferences cartPreferences;
-    OnCartItemChangeListener onCartItemChangeListener;
-
-    public interface OnCartItemChangeListener {
-        void onCartItemChange();
-    }
-
     public static class CartItemViewHolder extends RecyclerView.ViewHolder {
         ImageView cartItemImage;
         TextView cartItemTitle;
@@ -50,10 +44,9 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.CartIt
         }
     }
 
-    public CartItemAdapter(Context context, List<CartItem> cartItems, OnCartItemChangeListener listener) {
+    public CartItemAdapter(Context context, List<CartItem> cartItems) {
         this.cartItems = cartItems;
-        this.cartPreferences = new CartPreferences(context);
-        this.onCartItemChangeListener = listener;
+        this.cartPreferences = CartPreferences.getInstance(context);
     }
 
     @NonNull
@@ -83,7 +76,6 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.CartIt
                 holder.cartQuantity.setText(String.valueOf(quantity));
                 currentItem.setQuantity(quantity);
                 holder.cartItemTotalPrice.setText("$ " + String.format("%.2f", currentItem.getPrice() * quantity));
-                onCartItemChangeListener.onCartItemChange();
             }
         });
 
@@ -94,7 +86,6 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.CartIt
             holder.cartQuantity.setText(String.valueOf(quantity));
             currentItem.setQuantity(quantity);
             holder.cartItemTotalPrice.setText("$ " + String.format("%.2f", currentItem.getPrice() * quantity));
-            onCartItemChangeListener.onCartItemChange();
         });
 
     }

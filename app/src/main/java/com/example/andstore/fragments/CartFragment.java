@@ -23,7 +23,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CartFragment extends Fragment implements CartItemAdapter.OnCartItemChangeListener {
+public class CartFragment extends Fragment {
     private FirebaseAuth mAuth;
     private FirebaseFirestore fStore;
     private CartPreferences cartPreferences;
@@ -37,6 +37,7 @@ public class CartFragment extends Fragment implements CartItemAdapter.OnCartItem
     private TextView username;
     private TextView userAddress;
     private TextView totalCostText;
+    private TextView noItemText;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -44,7 +45,7 @@ public class CartFragment extends Fragment implements CartItemAdapter.OnCartItem
         View view = inflater.inflate(R.layout.cart_fragment_layout, container, false);
         mAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
-        cartPreferences = new CartPreferences(view.getContext());
+        cartPreferences = CartPreferences.getInstance(view.getContext());
 
         // Init view
         clearCartButton = view.findViewById(R.id.clear_cart_button);
@@ -53,6 +54,7 @@ public class CartFragment extends Fragment implements CartItemAdapter.OnCartItem
         userAddress = view.findViewById(R.id.address);
         purchaseButton = view.findViewById(R.id.purchase_button);
         totalCostText = view.findViewById(R.id.total_cost_text);
+        noItemText = view.findViewById(R.id.no_items_text);
 
         // Get user info from Firestore
         fStore.collection("users").document(mAuth.getCurrentUser().getUid()).get()
@@ -64,25 +66,34 @@ public class CartFragment extends Fragment implements CartItemAdapter.OnCartItem
                     updateProfileWarningText.setText("Please update your profile to purchase");
                 });
 
-        // Setup recycler view
-        setupRecyclerView(view);
+        cartPreferences.getCartItemCount().observe(getViewLifecycleOwner(), itemCount -> {
+            if (itemCount == 0) {
+                noItemText.setVisibility(View.VISIBLE);
+                purchaseButton.setText("No item");
+                clearCartButton.setVisibility(View.GONE);
+                totalCostText.setText("Total cost:");
+                totalPrice.setText("$ 0.00");
+            } else {
+                noItemText.setVisibility(View.GONE);
+                totalCostText.setText("Total cost " + "(" + itemCount + "):");
+                // Setup recycler view
+                setupRecyclerView(view);
+                totalPrice.setText("$ " + String.format("%.2f", cartPreferences.getTotalPrice()));
+            }
+        });
 
-        totalCostText.setText("Total cost" + " (" + cartPreferences.getCartItems().size() + "):");
 
         // Binding action
         clearCartButton.setOnClickListener(v -> {
             cartPreferences.clearCart();
             cartItemList.clear();
             adapter.notifyDataSetChanged();
-            onCartItemChange();
-            totalCostText.setText("Total cost:");
         });
 
         purchaseButton.setOnClickListener(v -> {
             cartPreferences.clearCart();
         });
 
-        onCartItemChange();
         return view;
     }
 
@@ -93,14 +104,8 @@ public class CartFragment extends Fragment implements CartItemAdapter.OnCartItem
         layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
 
-        cartItemList = cartPreferences.getCartItems();
-        adapter = new CartItemAdapter(view.getContext(), cartItemList, this);
+        cartItemList = cartPreferences.getCartItems() == null ? new ArrayList<>() : cartPreferences.getCartItems();
+        adapter = new CartItemAdapter(view.getContext(), cartItemList);
         recyclerView.setAdapter(adapter);
-    }
-
-    @Override
-    public void onCartItemChange() {
-        Log.d("CartFragment", "onCartItemChange: " + cartPreferences.getTotalPrice());
-        totalPrice.setText("$ " + String.format("%.2f", cartPreferences.getTotalPrice()));
     }
 }
