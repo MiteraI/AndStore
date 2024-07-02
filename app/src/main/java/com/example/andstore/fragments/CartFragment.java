@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -20,9 +21,22 @@ import com.example.andstore.BuildConfig;
 import com.example.andstore.R;
 import com.example.andstore.adapters.CartItemAdapter;
 import com.example.andstore.models.CartItem;
+import com.example.andstore.models.ShopTransaction;
+import com.example.andstore.models.enums.TransactionStatus;
 import com.example.andstore.preferences.CartPreferences;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Transaction;
+import com.google.firebase.firestore.TransactionOptions;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 import com.paypal.android.sdk.payments.PayPalPayment;
 import com.paypal.android.sdk.payments.PayPalService;
@@ -39,8 +53,10 @@ import java.util.List;
 public class CartFragment extends Fragment {
     private PayPalConfiguration payPalConfiguration;
     private int PAYPAL_REQUEST_CODE = 7171;
+    private String currentTransactionId;
     private FirebaseAuth mAuth;
     private FirebaseFirestore fStore;
+    private CollectionReference transactionRef;
     private CartPreferences cartPreferences;
     private List<CartItem> cartItemList;
     private RecyclerView recyclerView;
@@ -60,6 +76,7 @@ public class CartFragment extends Fragment {
         View view = inflater.inflate(R.layout.cart_fragment_layout, container, false);
         mAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
+        transactionRef = fStore.collection("transactions");
         payPalConfiguration = new PayPalConfiguration().environment(PayPalConfiguration.ENVIRONMENT_NO_NETWORK).clientId(BuildConfig.PAYPAL_CLIENT_ID);
         cartPreferences = CartPreferences.getInstance(view.getContext());
 
@@ -108,12 +125,30 @@ public class CartFragment extends Fragment {
 
         purchaseButton.setOnClickListener(v -> {
             if (cartItemList.size() == 0) {
-                Toast.makeText(getContext(), "No item in cart", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "No item in cart", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // TODO: Reserve stock quantity
-            getPayment();
+            // Disable button
+            purchaseButton.setBackgroundColor(getResources().getColor(R.color.grey));
+            purchaseButton.setEnabled(false);
+            Toast.makeText(requireContext(), "Processing payment...", Toast.LENGTH_SHORT).show();
+
+            ShopTransaction transaction = new ShopTransaction(mAuth.getCurrentUser().getUid(),
+                    cartItemList,
+                    cartPreferences.getTotalPrice(),
+                    TransactionStatus.PENDING,
+                    Timestamp.now(),
+                    username.getText().toString(),
+                    userAddress.getText().toString());
+            transactionRef.add(transaction).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                @Override
+                public void onSuccess(DocumentReference documentReference) {
+                    String transactionId = documentReference.getId();
+                    performTransaction(transactionId, transaction.getCartList());
+                    currentTransactionId = transactionId;
+                }
+            });
         });
 
         return view;
@@ -131,10 +166,7 @@ public class CartFragment extends Fragment {
         recyclerView.setAdapter(adapter);
     }
 
-    private void getPayment() {
-        String amounts = totalCost.getText().toString();
-        amounts = amounts.substring(2);
-
+    private void getPayment(double amounts, String transactionId) {
         PayPalPayment payPalPayment = new PayPalPayment(new BigDecimal(String.valueOf(amounts)), "USD", "Purchase from AndStore", PayPalPayment.PAYMENT_INTENT_SALE);
 
         Intent intent = new Intent(requireActivity(), PaymentActivity.class);
@@ -154,28 +186,127 @@ public class CartFragment extends Fragment {
                     try {
                         String paymentDetails = confirmation.toJSONObject().toString(4);
                         Log.d("PayPal", "Payment details: " + paymentDetails);
-                        // TODO: Product stock quantity update
+
                         // Clear cart
                         cartPreferences.clearCart();
                         cartItemList.clear();
                         adapter.notifyDataSetChanged();
 
+                        // Update transaction status
+                        updateTransactionStatus(currentTransactionId, TransactionStatus.COMPLETED);
+                        purchaseButton.setBackgroundColor(getResources().getColor(R.color.black));
+                        purchaseButton.setEnabled(true);
 
                     } catch (JSONException e) {
                         Log.e("PayPal", "JSON parsing error: " + e.getMessage());
-                        Toast.makeText(getContext(), "Payment details parsing failed", Toast.LENGTH_SHORT).show();
+
+                        revertStockUpdate(currentTransactionId);
+                        updateTransactionStatus(currentTransactionId, TransactionStatus.FAILED);
+                        purchaseButton.setBackgroundColor(getResources().getColor(R.color.black));
+                        purchaseButton.setEnabled(true);
+
                     }
                 } else {
                     Log.e("PayPal", "Confirmation is null");
                     Toast.makeText(getContext(), "Payment confirmation is null", Toast.LENGTH_SHORT).show();
+                    revertStockUpdate(currentTransactionId);
+                    updateTransactionStatus(currentTransactionId, TransactionStatus.CANCELLED);
+                    purchaseButton.setBackgroundColor(getResources().getColor(R.color.black));
+                    purchaseButton.setEnabled(true);
                 }
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 Log.i("PayPal", "Payment canceled");
                 Toast.makeText(getContext(), "Payment canceled", Toast.LENGTH_SHORT).show();
-            } else if (resultCode == PaymentActivity.RESULT_EXTRAS_INVALID) {
-                Log.e("PayPal", "Invalid payment or PayPalConfiguration");
-                Toast.makeText(getContext(), "Invalid payment or PayPal configuration", Toast.LENGTH_SHORT).show();
+                revertStockUpdate(currentTransactionId);
+                updateTransactionStatus(currentTransactionId, TransactionStatus.CANCELLED);
+                purchaseButton.setBackgroundColor(getResources().getColor(R.color.black));
+                purchaseButton.setEnabled(true);
+            }
+        } else if (resultCode == PaymentActivity.RESULT_EXTRAS_INVALID) {
+            Log.e("PayPal", "Invalid payment or PayPalConfiguration");
+            Toast.makeText(getContext(), "Invalid payment or PayPal configuration", Toast.LENGTH_SHORT).show();
+            String transactionId = data.getStringExtra("transactionId");
+            if (transactionId != null) {
+                revertStockUpdate(transactionId);
+                updateTransactionStatus(transactionId, TransactionStatus.FAILED);
+                purchaseButton.setBackgroundColor(getResources().getColor(R.color.black));
+                purchaseButton.setEnabled(true);
             }
         }
+    }
+
+    private void performTransaction(String transactionId, List<CartItem> cartItems) {
+        fStore.runTransaction(new TransactionOptions.Builder().setMaxAttempts(2).build(),
+                (Transaction.Function<Void>) firestoreTransaction ->
+                {
+                    for (CartItem item : cartItems) {
+                        DocumentReference productRef = fStore.collection(getString(R.string.product_collection)).document(item.getId());
+                        DocumentSnapshot productSnapshot = firestoreTransaction.get(productRef);
+                        if (productSnapshot.exists()) {
+                            long stock = productSnapshot.getLong("productStockQuantity");
+                            if (stock < item.getQuantity()) {
+                                Log.e("Transaction", "Not enough stock for product: " + item.getId());
+                                throw new FirebaseFirestoreException("Not enough stock", FirebaseFirestoreException.Code.ABORTED);
+                            }
+
+                            // Update stock
+                            long newStock = stock - item.getQuantity();
+                            firestoreTransaction.update(productRef, "productStockQuantity", newStock);
+                        } else {
+                            Log.e("Transaction", "Product does not exist: " + item.getId());
+                            throw new FirebaseFirestoreException("Product does not exist", FirebaseFirestoreException.Code.ABORTED);
+                        }
+                    }
+                    return null;
+
+                }).addOnSuccessListener(aVoid -> {
+            Log.d("Transaction", "Transaction successful");
+            // Proceed with PayPal payment
+            getPayment(cartPreferences.getTotalPrice(), transactionId);
+        }).addOnFailureListener(e -> {
+            Log.e("Transaction", "Transaction failed: " + e.getMessage());
+            if (e instanceof FirebaseFirestoreException && ((FirebaseFirestoreException) e).getCode() == FirebaseFirestoreException.Code.ABORTED) {
+                // Handle transaction failure due to insufficient stock
+                updateTransactionStatus(transactionId, TransactionStatus.FAILED);
+                Toast.makeText(requireContext(), "There is not enough item in stock", Toast.LENGTH_SHORT).show();
+                purchaseButton.setBackgroundColor(getResources().getColor(R.color.black));
+                purchaseButton.setEnabled(true);
+            } else {
+                // Handle other types of failure
+                updateTransactionStatus(transactionId, TransactionStatus.FAILED);
+                Toast.makeText(requireContext(), "Transaction failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                purchaseButton.setBackgroundColor(getResources().getColor(R.color.black));
+                purchaseButton.setEnabled(true);
+            }
+        });
+    }
+
+
+    public void updateTransactionStatus(String transactionId, TransactionStatus status) {
+        fStore.collection("transactions").document(transactionId).update("status", status.toString()).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d("Transaction", "Transaction status updated to " + status.toString());
+            }
+        }).addOnFailureListener(e -> Log.e("Transaction", "Error updating transaction status: " + e.getMessage()));
+    }
+
+    public void revertStockUpdate(String transactionId) {
+        fStore.collection("transactions").document(transactionId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        ShopTransaction transaction = document.toObject(ShopTransaction.class);
+                        List<CartItem> cartItems = transaction.getCartList();
+
+                        for (CartItem item : cartItems) {
+                            fStore.collection(getString(R.string.product_collection)).document(item.getId()).update("productStockQuantity", FieldValue.increment(item.getQuantity()));
+                        }
+                    }
+                }
+            }
+        });
     }
 }
