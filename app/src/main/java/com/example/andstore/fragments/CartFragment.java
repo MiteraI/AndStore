@@ -48,7 +48,9 @@ import org.json.JSONException;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CartFragment extends Fragment {
     private PayPalConfiguration payPalConfiguration;
@@ -67,6 +69,7 @@ public class CartFragment extends Fragment {
     private TextView totalCost;
     private TextView username;
     private TextView userAddress;
+    private TextView phoneNumber;
     private TextView totalCostText;
     private TextView noItemText;
 
@@ -88,12 +91,14 @@ public class CartFragment extends Fragment {
         purchaseButton = view.findViewById(R.id.purchase_button);
         totalCostText = view.findViewById(R.id.total_cost_text);
         noItemText = view.findViewById(R.id.no_items_text);
+        phoneNumber = view.findViewById(R.id.phone);
 
         // Get user info from Firestore
         fStore.collection("users").document(mAuth.getCurrentUser().getUid()).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     username.setText(documentSnapshot.getString("fullName"));
                     userAddress.setText(documentSnapshot.getString("address"));
+                    phoneNumber.setText(documentSnapshot.getString("phoneNumber"));
                 }).addOnFailureListener(e -> {
                     TextView updateProfileWarningText = view.findViewById(R.id.update_profile_warning);
                     updateProfileWarningText.setText("Please update your profile to purchase");
@@ -123,6 +128,7 @@ public class CartFragment extends Fragment {
             adapter.notifyDataSetChanged();
         });
 
+        // Purchase button
         purchaseButton.setOnClickListener(v -> {
             if (cartItemList.size() == 0) {
                 Toast.makeText(requireContext(), "No item in cart", Toast.LENGTH_SHORT).show();
@@ -134,13 +140,17 @@ public class CartFragment extends Fragment {
             purchaseButton.setEnabled(false);
             Toast.makeText(requireContext(), "Processing payment...", Toast.LENGTH_SHORT).show();
 
+
+            // Create transaction
             ShopTransaction transaction = new ShopTransaction(mAuth.getCurrentUser().getUid(),
                     cartItemList,
                     cartPreferences.getTotalPrice(),
                     TransactionStatus.PENDING,
                     Timestamp.now(),
                     username.getText().toString(),
-                    userAddress.getText().toString());
+                    userAddress.getText().toString(),
+                    phoneNumber.getText().toString());
+
             transactionRef.add(transaction).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                 @Override
                 public void onSuccess(DocumentReference documentReference) {
@@ -237,47 +247,49 @@ public class CartFragment extends Fragment {
 
     private void performTransaction(String transactionId, List<CartItem> cartItems) {
         fStore.runTransaction(new TransactionOptions.Builder().setMaxAttempts(2).build(),
-                (Transaction.Function<Void>) firestoreTransaction ->
-                {
+                (Transaction.Function<Void>) firestoreTransaction -> {
+                    // Check if all products have enough stock
+                    Map<String, Long> productStocks = new HashMap<>();
                     for (CartItem item : cartItems) {
                         DocumentReference productRef = fStore.collection(getString(R.string.product_collection)).document(item.getId());
                         DocumentSnapshot productSnapshot = firestoreTransaction.get(productRef);
-                        if (productSnapshot.exists()) {
-                            long stock = productSnapshot.getLong("productStockQuantity");
-                            if (stock < item.getQuantity()) {
-                                Log.e("Transaction", "Not enough stock for product: " + item.getId());
-                                throw new FirebaseFirestoreException("Not enough stock", FirebaseFirestoreException.Code.ABORTED);
-                            }
-
-                            // Update stock
-                            long newStock = stock - item.getQuantity();
-                            firestoreTransaction.update(productRef, "productStockQuantity", newStock);
-                        } else {
-                            Log.e("Transaction", "Product does not exist: " + item.getId());
-                            throw new FirebaseFirestoreException("Product does not exist", FirebaseFirestoreException.Code.ABORTED);
+                        if (!productSnapshot.exists()) {
+                            throw new FirebaseFirestoreException("Product does not exist: " + item.getId(), FirebaseFirestoreException.Code.ABORTED);
                         }
+                        Long stock = productSnapshot.getLong("productStockQuantity");
+                        if (stock == null || stock < item.getQuantity()) {
+                            throw new FirebaseFirestoreException("Not enough stock for product: " + item.getId(), FirebaseFirestoreException.Code.ABORTED);
+                        }
+                        productStocks.put(item.getId(), stock);
                     }
-                    return null;
 
+                    // If we get here, all stocks are sufficient. Now perform all writes
+                    for (CartItem item : cartItems) {
+                        DocumentReference productRef = fStore.collection(getString(R.string.product_collection)).document(item.getId());
+                        long currentStock = productStocks.get(item.getId());
+                        long newStock = currentStock - item.getQuantity();
+                        firestoreTransaction.update(productRef, "productStockQuantity", newStock);
+                    }
+
+                    return null;
                 }).addOnSuccessListener(aVoid -> {
             Log.d("Transaction", "Transaction successful");
+
             // Proceed with PayPal payment
             getPayment(cartPreferences.getTotalPrice(), transactionId);
         }).addOnFailureListener(e -> {
             Log.e("Transaction", "Transaction failed: " + e.getMessage());
             if (e instanceof FirebaseFirestoreException && ((FirebaseFirestoreException) e).getCode() == FirebaseFirestoreException.Code.ABORTED) {
-                // Handle transaction failure due to insufficient stock
-                updateTransactionStatus(transactionId, TransactionStatus.FAILED);
                 Toast.makeText(requireContext(), "There is not enough item in stock", Toast.LENGTH_SHORT).show();
-                purchaseButton.setBackgroundColor(getResources().getColor(R.color.black));
-                purchaseButton.setEnabled(true);
-            } else {
-                // Handle other types of failure
                 updateTransactionStatus(transactionId, TransactionStatus.FAILED);
+                revertStockUpdate(transactionId);
+            } else {
                 Toast.makeText(requireContext(), "Transaction failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                purchaseButton.setBackgroundColor(getResources().getColor(R.color.black));
-                purchaseButton.setEnabled(true);
+                updateTransactionStatus(transactionId, TransactionStatus.FAILED);
+                revertStockUpdate(transactionId);
             }
+            purchaseButton.setBackgroundColor(getResources().getColor(R.color.black));
+            purchaseButton.setEnabled(true);
         });
     }
 

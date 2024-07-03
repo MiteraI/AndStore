@@ -6,15 +6,16 @@ import com.google.type.DateTime;
 
 import java.util.List;
 
-public class ShopTransaction {
-    private String id;
-    private String userId;
-    private List<CartItem> cartList;
-    private double totalCost;
-    private TransactionStatus status;
-    private Timestamp transactionDate;
-    private String receiverName;
-    private String receiverAddress;
+    public class ShopTransaction {
+        private String id;
+        private String userId;
+        private List<CartItem> cartList;
+        private double totalCost;
+        private TransactionStatus status;
+        private Timestamp transactionDate;
+        private String receiverName;
+        private String receiverAddress;
+        private String receiverPhoneNumber;
 
     public ShopTransaction() {
     }
@@ -29,8 +30,14 @@ public class ShopTransaction {
         this.receiverAddress = receiverAddress;
     }
 
-    public ShopTransaction(String id, String userId, List<CartItem> cartList, double totalCost, TransactionStatus status, Timestamp transactionDate, String receiverName, String receiverAddress) {
-        this.id = id;
+    public ShopTransaction(String userId,
+                           List<CartItem> cartList,
+                           double totalCost,
+                           TransactionStatus status,
+                           Timestamp transactionDate,
+                           String receiverName,
+                           String receiverAddress,
+                           String receiverPhoneNumber) {
         this.userId = userId;
         this.cartList = cartList;
         this.totalCost = totalCost;
@@ -38,6 +45,7 @@ public class ShopTransaction {
         this.transactionDate = transactionDate;
         this.receiverName = receiverName;
         this.receiverAddress = receiverAddress;
+        this.receiverPhoneNumber = receiverPhoneNumber;
     }
 
     public String getId() {
@@ -59,7 +67,9 @@ public class ShopTransaction {
     public List<CartItem> getCartList() {
         return cartList;
     }
-
+    public void setCartList(List<CartItem> cartList) {
+        this.cartList = cartList;
+    }
     public double getTotalCost() {
         return totalCost;
     }
@@ -98,5 +108,13 @@ public class ShopTransaction {
 
     public void setReceiverAddress(String receiverAddress) {
         this.receiverAddress = receiverAddress;
+    }
+
+    public String getReceiverPhoneNumber() {
+        return receiverPhoneNumber;
+    }
+
+    public void setReceiverPhoneNumber(String receiverPhoneNumber) {
+        this.receiverPhoneNumber = receiverPhoneNumber;
     }
 }
