@@ -3,6 +3,7 @@
     <string name="id">Id</string>
     <string name="product_collection">shop-products</string>
     <string name="user_collection">users</string>
+    <string name="transaction_collection">transactions</string>
     <string name="app_name">AndStore</string>
     <string name="nav_home">Home</string>
     <string name="nav_account">Profile</string>
