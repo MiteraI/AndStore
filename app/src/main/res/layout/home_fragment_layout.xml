@@ -104,6 +104,12 @@
                 android:layout_marginVertical="8dp" />
 
         </RelativeLayout>
-    </LinearLayout>
 
+        <fragment
+            android:id="@+id/google_map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="320dp" />
+
+    </LinearLayout>
 </ScrollView>

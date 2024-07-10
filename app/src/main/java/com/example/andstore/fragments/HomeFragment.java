@@ -2,6 +2,7 @@ package com.example.andstore.fragments;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,6 +20,12 @@ import com.denzcoskun.imageslider.models.SlideModel;
 import com.example.andstore.R;
 import com.example.andstore.adapters.ShopItemAdapter;
 import com.example.andstore.models.ShopItem;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -26,15 +33,19 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements OnMapReadyCallback {
     private FirebaseAuth mAuth;
     private FirebaseFirestore fStore;
+    private GoogleMap mMap;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private List<ShopItem> shopItemList;
     private TextView welcomeText;
     private TextView usernameText;
+    private SupportMapFragment mapFragment;
+    private static final LatLng SYDNEY = new LatLng(-34, 151);
+    private static final float DEFAULT_ZOOM = 12f;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -58,6 +69,18 @@ public class HomeFragment extends Fragment {
 
         // Set up RecyclerView
         setupRecyclerView(view);
+
+
+        if (getActivity() != null) {
+            mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.google_map);
+            if (mapFragment == null) {
+                mapFragment = SupportMapFragment.newInstance();
+                getChildFragmentManager().beginTransaction()
+                        .add(R.id.google_map, mapFragment)
+                        .commit();
+            }
+            mapFragment.getMapAsync(this);
+        }
 
         return view;
     }
@@ -106,5 +129,19 @@ public class HomeFragment extends Fragment {
                 Log.d("Error", "Error getting documents: ", task.getException());
             }
         });
+    }
+
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        mMap = googleMap;
+        setupMap();
+    }
+
+    private void setupMap() {
+        if (mMap != null) {
+            mMap.clear(); // Clear existing markers
+            mMap.addMarker(new MarkerOptions().position(SYDNEY).title("Marker in Sydney"));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SYDNEY, DEFAULT_ZOOM));
+        }
     }
 }
