@@ -85,11 +85,23 @@ public class UserProfileFragment extends Fragment {
             }
 
             // Save user data
-            db.collection(getString(R.string.user_collection)).document(mAuth.getCurrentUser().getUid()).update(
-                    "fullName", fullNameForm.getText().toString(),
-                    "phoneNumber", phoneForm.getText().toString(),
-                    "address", addressForm.getText().toString()
-            );
+            if (db.collection(getString(R.string.user_collection)).document(mAuth.getCurrentUser().getUid()).get() != null) {
+                // If never had user data then create new one
+                db.collection(getString(R.string.user_collection)).document(mAuth.getCurrentUser().getUid()).set(
+                        new UserInfo(
+                                mAuth.getCurrentUser().getUid(),
+                                fullNameForm.getText().toString(),
+                                phoneForm.getText().toString(),
+                                addressForm.getText().toString()
+                        )
+                );
+            } else {
+                db.collection(getString(R.string.user_collection)).document(mAuth.getCurrentUser().getUid()).update(
+                        "fullName", fullNameForm.getText().toString(),
+                        "phoneNumber", phoneForm.getText().toString(),
+                        "address", addressForm.getText().toString()
+                );
+            }
 
             // Notify user with toast that update is successful
             Toast.makeText(getActivity(), "Profile updated", Toast.LENGTH_SHORT).show();

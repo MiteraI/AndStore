@@ -111,6 +111,7 @@ public class CartFragment extends Fragment {
 
         cartPreferences.getCartItemCount().observe(getViewLifecycleOwner(), itemCount -> {
             if (itemCount == 0) {
+                cartItemList = new ArrayList<>();
                 noItemText.setVisibility(View.VISIBLE);
                 purchaseButton.setText("No item");
                 clearCartButton.setVisibility(View.GONE);
@@ -135,6 +136,12 @@ public class CartFragment extends Fragment {
 
         // Purchase button
         purchaseButton.setOnClickListener(v -> {
+            // If user don't have user data then return
+            if (username.getText().toString().isEmpty() || userAddress.getText().toString().isEmpty() || phoneNumber.getText().toString().isEmpty()) {
+                Toast.makeText(requireContext(), "Please update your profile to purchase", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             if (cartItemList.size() == 0) {
                 Toast.makeText(requireContext(), "No item in cart", Toast.LENGTH_SHORT).show();
                 return;

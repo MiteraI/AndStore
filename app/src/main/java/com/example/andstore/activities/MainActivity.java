@@ -34,8 +34,6 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
     private CartPreferences cartPreferences;
-    private GoogleMap mMap;
-    private HomeFragment homeFragment;
     private Fragment currentFragment;
     LinearLayout homeButton;
     LinearLayout profileButton;
