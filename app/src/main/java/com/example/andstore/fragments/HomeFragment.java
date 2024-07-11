@@ -44,8 +44,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     private TextView welcomeText;
     private TextView usernameText;
     private SupportMapFragment mapFragment;
-    private static final LatLng SYDNEY = new LatLng(-34, 151);
-    private static final float DEFAULT_ZOOM = 12f;
+    private static final LatLng SYDNEY = new LatLng(10.875197542355616, 106.8007824041698);
+    private static final float DEFAULT_ZOOM = 15f;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -87,9 +87,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
     private void setupBannerSlider(View view) {
         ArrayList<SlideModel> imageList = new ArrayList<>();
-        imageList.add(new SlideModel("https://bit.ly/2YoJ77H", "The animal population decreased by 58 percent in 42 years.", ScaleTypes.FIT));
-        imageList.add(new SlideModel("https://bit.ly/2BteuF2", "Elephants and tigers may become extinct.", ScaleTypes.FIT));
-        imageList.add(new SlideModel("https://bit.ly/3fLJf72", "And people do that.", ScaleTypes.FIT));
+        imageList.add(new SlideModel("https://saritasa.s3.ap-southeast-1.amazonaws.com/Screenshot+2024-07-11+111511.png", "Simple fits all.", ScaleTypes.FIT));
+        imageList.add(new SlideModel("https://saritasa.s3.ap-southeast-1.amazonaws.com/Screenshot+2024-07-11+123928.png", "Black and white for all situation.", ScaleTypes.FIT));
+        imageList.add(new SlideModel("https://saritasa.s3.ap-southeast-1.amazonaws.com/Screenshot+2024-07-11+124108.png", "Back to school with styles.", ScaleTypes.FIT));
 
         ImageSlider imageSlider = view.findViewById(R.id.banner_slider);
         imageSlider.setImageList(imageList);
@@ -140,7 +140,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     private void setupMap() {
         if (mMap != null) {
             mMap.clear(); // Clear existing markers
-            mMap.addMarker(new MarkerOptions().position(SYDNEY).title("Marker in Sydney"));
+            mMap.addMarker(new MarkerOptions().position(SYDNEY).title("The OG Store"));
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SYDNEY, DEFAULT_ZOOM));
         }
     }
