@@ -94,15 +94,20 @@ public class CartFragment extends Fragment {
         phoneNumber = view.findViewById(R.id.phone);
 
         // Get user info from Firestore
-        fStore.collection("users").document(mAuth.getCurrentUser().getUid()).get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    username.setText(documentSnapshot.getString("fullName"));
-                    userAddress.setText(documentSnapshot.getString("address"));
-                    phoneNumber.setText(documentSnapshot.getString("phoneNumber"));
-                }).addOnFailureListener(e -> {
-                    TextView updateProfileWarningText = view.findViewById(R.id.update_profile_warning);
-                    updateProfileWarningText.setText("Please update your profile to purchase");
-                });
+        if (mAuth.getCurrentUser() != null) {
+            fStore.collection("users").document(mAuth.getCurrentUser().getUid()).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        username.setText(documentSnapshot.getString("fullName"));
+                        userAddress.setText(documentSnapshot.getString("address"));
+                        phoneNumber.setText(documentSnapshot.getString("phoneNumber"));
+                    }).addOnFailureListener(e -> {
+                        TextView updateProfileWarningText = view.findViewById(R.id.update_profile_warning);
+                        updateProfileWarningText.setText("Please update your profile to purchase");
+                    });
+        } else {
+            TextView updateProfileWarningText = view.findViewById(R.id.update_profile_warning);
+            updateProfileWarningText.setText("Please login to purchase");
+        }
 
         cartPreferences.getCartItemCount().observe(getViewLifecycleOwner(), itemCount -> {
             if (itemCount == 0) {

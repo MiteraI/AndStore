@@ -48,6 +48,10 @@ public class UserProfileFragment extends Fragment {
         db.collection(getString(R.string.user_collection)).document(mAuth.getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 currentUser = task.getResult().toObject(UserInfo.class);
+                if (currentUser == null) {
+                    Toast.makeText(getActivity(), "Failed to load user data", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 fullNameForm.setText(currentUser.getFullName());
                 phoneForm.setText(currentUser.getPhoneNumber());
                 addressForm.setText(currentUser.getAddress());
